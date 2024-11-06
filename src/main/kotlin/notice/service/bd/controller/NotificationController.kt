@@ -1,5 +1,6 @@
 package notice.service.bd.controller
 
+import notice.service.bd.aspect.AspectLogging
 import notice.service.bd.model.NotificationDto
 import notice.service.bd.service.NotificationService
 import org.springframework.web.bind.annotation.*
@@ -34,6 +35,7 @@ class NotificationController(
         return notificationService.findNotificationById(id)
     }
 
+    @AspectLogging.LoggerCustomClass("Finding notice by userId and day...")
     @GetMapping("/user/{userId}/day/{day}")
     fun getNotificationsByUserIdAndDay(@PathVariable userId: Long, @PathVariable day: Int): List<NotificationDto> {
         return notificationService.findByUserIdAndDay(userId, day)
