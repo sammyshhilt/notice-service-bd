@@ -1,10 +1,15 @@
 package notice.service.bd.controller
 
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import notice.service.bd.aspect.AspectLogging
 import notice.service.bd.model.NotificationDto
 import notice.service.bd.service.NotificationService
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@Validated
 @RequestMapping("/notices")
 class NotificationController(
     private val notificationService: NotificationService
@@ -23,9 +28,7 @@ class NotificationController(
     }
 
     @GetMapping("/search")
-    fun searchNotifications(
-        @RequestParam text: String,
-    ): List<NotificationDto> {
+    fun searchNotifications(@RequestParam @NotBlank(message = "Notification need to be not blank!")text: String): List<NotificationDto> {
         return notificationService.searchNotifications(text)
     }
 
@@ -34,8 +37,9 @@ class NotificationController(
         return notificationService.findNotificationById(id)
     }
 
+    @AspectLogging.LoggerCustomClass("Finding notice by userId and day...")
     @GetMapping("/user/{userId}/day/{day}")
-    fun getNotificationsByUserIdAndDay(@PathVariable userId: Long, @PathVariable day: Int): List<NotificationDto> {
+    fun getNotificationsByUserIdAndDay(@PathVariable userId: Long, @PathVariable @Min(1, message = "Day is always more or equal to 1!")day: Int): List<NotificationDto> {
         return notificationService.findByUserIdAndDay(userId, day)
     }
 
