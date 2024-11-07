@@ -1,14 +1,10 @@
 package notice.service.bd.aspect
-
 import jakarta.validation.Constraint
-//import jakarta.validation.Payload
 import notice.service.bd.aspect.validator.CustomValidator
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.*
-import org.springframework.stereotype.Component
 import org.slf4j.LoggerFactory
-import org.springframework.web.bind.MethodArgumentNotValidException
 import kotlin.reflect.KClass
 
 
