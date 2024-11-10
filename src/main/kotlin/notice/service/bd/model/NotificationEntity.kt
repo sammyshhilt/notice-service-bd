@@ -1,12 +1,14 @@
 package notice.service.bd.model
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.NotNull
 import notice.service.bd.aspect.AspectLogging
+import notice.service.bd.aspect.annotation.CustomFieldAnnotation
 import org.springframework.validation.annotation.Validated
 
 
 @Entity
-@Table(name="notification")
+@Table(name = "notification")
 data class NotificationEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,13 +16,13 @@ data class NotificationEntity(
 
     val text: String,
 
-    @AspectLogging.CustomFieldAnnotation(message="Day need to be less than 31!")
     val day: Int,
 
-    @Column(name = "userId")
+    @Column(name = "userId", insertable = false, updatable = false, nullable = false)
     val userId: Long,
 
     @ManyToOne
-    @JoinColumn(name = "userId", referencedColumnName = "id", insertable = false, updatable = false)
-    val user: UserEntity? = null
+    @JoinColumn(name = "userId", referencedColumnName = "id")
+    @NotNull
+    val user: UserEntity
 )

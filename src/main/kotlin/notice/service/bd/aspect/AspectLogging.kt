@@ -1,5 +1,6 @@
 package notice.service.bd.aspect
 import jakarta.validation.Constraint
+import notice.service.bd.aspect.annotation.LoggerCustomClass
 import notice.service.bd.aspect.validator.CustomValidator
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.ProceedingJoinPoint
@@ -11,20 +12,6 @@ import kotlin.reflect.KClass
 
 @Aspect
 class AspectLogging {
-
-    @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-    @Retention(AnnotationRetention.RUNTIME)
-    @Constraint(validatedBy = [CustomValidator::class])
-    annotation class CustomFieldAnnotation(
-        val message: String = "Invalid value",
-        val groups: Array<KClass<*>> = [],
-        val payload: Array<KClass<*>> = []
-    )
-
-
-    @Target(AnnotationTarget.FUNCTION)
-    @Retention(AnnotationRetention.RUNTIME)
-    annotation class LoggerCustomClass(val value: String = "")
 
     private val logger = LoggerFactory.getLogger(AspectLogging::class.java)
 
@@ -56,8 +43,7 @@ class AspectLogging {
         logger.info("After executing method: ${joinPoint.signature.name}")
     }
 
-    @Around("execution(* notice.service.bd.controller.NotificationController.createNotification(..)) || " +
-            "execution(* notice.service.bd.controller.NotificationController.getNotificationsByUserId(..))")
+    @Around("execution(* notice.service.bd.controller.NotificationController.createNotification(..))")
     fun logAroundSpecificMethods(joinPoint: ProceedingJoinPoint): Any? {
         val methodName = joinPoint.signature.name
         val args = joinPoint.args.joinToString()
@@ -77,5 +63,13 @@ class AspectLogging {
     @AfterThrowing(pointcut = "within(@org.springframework.web.bind.annotation.RestController *)", throwing = "exception")
     fun logAfterThrowing(joinPoint: JoinPoint, exception: Throwable) {
         logger.error("Exception in method ${joinPoint.signature.name}: ${exception.message}")
+    }
+
+    @Around("execution(* notice.service.bd.controller.UserController.deleteUserByChatId(..))")
+    fun aroundDeletingFun(joinPoint: ProceedingJoinPoint, result: Any?){
+        val args = joinPoint.args.joinToString()
+        logger.info("Around - Before executing UserController.deleteUserByChatId(..) with args: $args")
+        val result = joinPoint.proceed()
+        logger.info("Around - After executing UserController.deleteUserByChatId(..) with result: $result")
     }
 }

@@ -3,6 +3,7 @@ package notice.service.bd.controller
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import notice.service.bd.aspect.AspectLogging
+import notice.service.bd.aspect.annotation.LoggerCustomClass
 import notice.service.bd.model.NotificationDto
 import notice.service.bd.service.NotificationService
 import org.springframework.validation.annotation.Validated
@@ -37,7 +38,7 @@ class NotificationController(
         return notificationService.findNotificationById(id)
     }
 
-    @AspectLogging.LoggerCustomClass("Finding notice by userId and day...")
+    @LoggerCustomClass("Finding notice by userId and day...")
     @GetMapping("/user/{userId}/day/{day}")
     fun getNotificationsByUserIdAndDay(@PathVariable userId: Long, @PathVariable @Min(1, message = "Day is always more or equal to 1!")day: Int): List<NotificationDto> {
         return notificationService.findByUserIdAndDay(userId, day)

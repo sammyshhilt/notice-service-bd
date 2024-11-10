@@ -11,32 +11,30 @@ import org.springframework.stereotype.Service
 @Service
 class NotificationServiceImpl(
     private val notificationRepository: NotificationRepository,
-    private val userRepository: UserRepository
+    private val notificationConverter: NotificationConverter
 ) : NotificationService {
 
     override fun createNotification(notificationDto: NotificationDto): NotificationDto {
-        val entity = NotificationConverter.toEntity(notificationDto)
-        return NotificationConverter.toDto(notificationRepository.save(entity))
+        val entity = notificationConverter.toEntity(notificationDto)
+        return notificationConverter.toDto(notificationRepository.save(entity))
     }
 
     override fun getNotificationsByUserId(userId: Long): List<NotificationDto> {
-        return notificationRepository.findAllByUserId(userId).map(NotificationConverter::toDto)
+        return notificationRepository.findAllByUserId(userId).map(notificationConverter::toDto)
     }
 
     override fun searchNotifications(text: String): List<NotificationDto> {
-        return notificationRepository.findByTextContaining(text).map(NotificationConverter::toDto)
+        return notificationRepository.findByTextContaining(text).map(notificationConverter::toDto)
     }
 
-
     override fun findNotificationById(id: Long): NotificationDto {
-            val notificationEntity = notificationRepository.findByIdOrNull(id)
-                ?: throw NoSuchElementException("Notification with ID $id not found")
-            return NotificationConverter.toDto(notificationEntity)
+        val notificationEntity = notificationRepository.findByIdOrNull(id)
+            ?: throw NoSuchElementException("Notification with ID $id not found")
+        return notificationConverter.toDto(notificationEntity)
     }
 
     override fun findByUserIdAndDay(userId: Long, day: Int): List<NotificationDto> {
         val notifications = notificationRepository.findByUserIdAndDay(userId, day)
-        return notifications.map { NotificationConverter.toDto(it) }
+        return notifications.map(notificationConverter::toDto)
     }
-
 }
